@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<config>
+	<info>
+		<id>@extension.id@</id>
+		<type>@extension.Type@</type>
+		<name>@extension.Name@</name>
+		<label>@extension.Label@</label>
+		<codename>@extension.Codename@</codename>
+		<description><![CDATA[@extension.Description@]]></description>
+		<sources>@extension.Sources@</sources>
+		<author>@extension.Author@</author>
+		<category>@extension.Category@</category>
+		<image>@extension.Image@</image>
+		<support>@extension.Support@</support>
+		<documentation>@extension.Documentation@</documentation>
+		<mailinglist>@extension.mailinglist@</mailinglist>
+		<created>@build.date@</created>
+		<version>@build.number@</version>
+		<packaged-by>@extension.packagedby@</packaged-by>
+		<paypal>@extension.paypal@</paypal>
+	</info>
+	<step label="" description="">
+		<group label="Settings" description="Some general settings used for the application">
+			<item name="isBuiltInTag" label="Install as built-in tag" type="checkbox"
+				selected="false" description="install as a built-in tag">true</item>
+			<item name="installTestPlugin" label="Install the test as a plugin"
+				type="checkbox" selected="true" description="add the test plugin">true</item>
+		</group>
+	</step>
+</config>

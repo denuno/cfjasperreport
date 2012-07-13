@@ -1,0 +1,39 @@
+#! /bin/bash
+reldir=`dirname $0`
+cd $reldir/build
+ANTCMD="/bin/sh $HOME/cfdistro/ant/bin/ant -nouserlib -f build.xml"
+export ANT_HOME=$HOME/cfdistro/ant
+if [ -z "$1" ]; then
+echo "cfjasperreport control script"
+OPTIONS="start stop help list-targets update exit"
+select opt in $OPTIONS; do
+if [ "$opt" = "start" ]; then
+	$ANTCMD build.start.launch
+	exit
+elif [ "$opt" = "stop" ]; then
+	$ANTCMD server.stop
+	exit
+elif [ "$opt" = "help" ]; then
+	echo "usage (skips this prompt): cfjasperreport.sh [start|stop|{target}]"
+elif [ "$opt" = "list-targets" ]; then
+	$ANTCMD help
+elif [ "$opt" = "update" ]; then
+	$ANTCMD project.update
+elif [ "$opt" = "exit" ]; then
+	exit
+else
+	#clear
+	echo bad option
+fi
+done
+fi
+target=$1
+parameters=""
+shift
+for var in "$@"
+do
+    parameters="$parameters -D$var"
+done
+$ANTCMD $target -Dbasedir=. $parameters
+	
+			

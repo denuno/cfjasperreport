@@ -1,0 +1,28 @@
+<datasources>
+
+	<datasource 
+		name="cfjasperreport" 
+		class="org.h2.Driver" 
+		host="127.0.0.1" 
+		port="3306" 
+		database="cfjasperreport"
+		username="@dsn.username@" 
+		password="@dsn.password@" 
+		blob="false"
+		clob="false" 
+		sqlstoredprocedures="true"
+		sqlinsert="true"
+		sqlselect="true"
+		sqlupdate="true"
+		sqldelete="true"
+		maintainconnection="true"
+		logintimeout="120"
+		connectionretries="0"
+		connectionlimit="-1"
+		connectiontimeout="1"
+		custom=""
+		jdbcstring="jdbc:h2:@user.home@/h2dbs/cfjasperreport/cfjasperreport"
+		jdbc="h2"
+		 />
+
+</datasources>

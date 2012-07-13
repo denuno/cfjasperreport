@@ -1,0 +1,440 @@
+<cfcomponent name="jasperreport">
+
+	<!--- Meta data --->
+	<cfset this.metadata.attributetype="fixed" />
+
+	<cfset this.metadata.attributes={
+		action=			{required:false,type:"string",default:"runReport"},
+		jrxml=			{required:false,type:"string",default:""},
+		exporttype=			{required:false,type:"string",default:"pdf"},
+		exportfile=			{required:false,type:"string",default:""},
+		dsn=			{required:false,type:"string",default:""},
+		datasource=			{required:false,type:"string",default:""},
+		query=			{required:false,type:"Object"},
+		params=			{required:false,type:"struct"},
+		sqlstring=			{required:false,type:"string",default:""},
+		datafile=			{required:false,type:"any",default:""},
+		resultsVar= {required:false,type:"string",default:"report"},
+		resourcebundle = {required:false,type:"string",default:""},
+		datasourcexpath= {required:false,type:"string",default:""},
+		filename=			{required:false,type:"string",default:"report"},
+		forceDownload= {required:false,type:"boolean",default:"false"}
+		} />
+
+	<cffunction name="init" output="no" returntype="void" hint="invoked after tag is constructed">
+		<cfargument name="hasEndTag" type="boolean" required="yes" />
+		<cfargument name="parent" type="component" required="no" hint="the parent cfc custom tag, if there is one" />
+		<cfset var libs = "" />
+		<cfset variables.hasEndTag = arguments.hasEndTag />
+	</cffunction>
+
+<!---
+	<cffunction name="throw">
+		<cfargument name="message" />
+		<cfargument name="error" />
+		<cfif structKeyExists(arguments,"error")>
+			<!--- <cfset request.debug(error) /> --->
+			<cftry>
+				<cfthrow type="cfjasperreport.error" message="#message#" detail="#error.stacktrace#" />
+				<cfcatch>
+					<cfthrow type="cfjasperreport.error" message="#message#" detail="#error.toString()#" />
+				</cfcatch>
+			</cftry>
+		</cfif>
+		<cfthrow type="cfjasperreport.error" message="#message#" />
+	</cffunction>
+ --->
+
+	<cffunction name="onStartTag" output="yes" returntype="boolean">
+		<cfargument name="attributes" type="struct" />
+		<cfargument name="caller" type="struct" />
+		<cfscript>
+			var report = "";
+			var runFunk = this[attributes.action];
+			if(attributes.dsn neq "") {
+				attributes.datasource = attributes.dsn;
+			}
+			var results = runFunk(argumentCollection=attributes);
+			if(attributes.action == "runReport") {
+				if(attributes.exportfile gt "") {
+					reportToFile(results,attributes.exportfile);
+				} else {
+					download("#attributes.filename#.#attributes.exporttype#",results,attributes.forceDownload);
+				}
+			}
+			caller[attributes.resultsVar] = results;
+		</cfscript>
+		<cfif not variables.hasEndTag>
+			<cfset onEndTag(attributes,caller,"") />
+		</cfif>
+		<cfreturn variables.hasEndTag />
+	</cffunction>
+
+	<cffunction name="runReport">
+		<cfargument name="jrxml" type="string" required="yes" />
+		<cfargument name="dataSource" default="" />
+		<cfargument name="datafile" default="" />
+		<cfargument name="exportType" default="pdf" />
+		<cfargument name="reportparams" default="#structNew()#" />
+		<cfargument name="download" default="no" />
+		<cfargument name="newquery" default="" />
+		<cfargument name="query" />
+		<cfargument name="resourcebundle" default="" />
+		<cfargument name="locale" default="US" />
+		<cfargument name="localeLanguage" default="ENGLISH" />
+		<cflock name="jasperLock" type="exclusive" timeout="10">
+			<cfif fileExists(arguments.jrxml)>
+				<cfset var daJRXML = readJRXMLFile(arguments.jrxml) />
+			<cfelseif isXML(arguments.jrxml)>
+				<cfset var daJRXML = xmlparse(arguments.jrxml) />
+			<cfelse>
+				<cfthrow type="cfjasperreport.filenotfound" detail="the file #jrxml# could not be found or was not valid XML" />
+			</cfif>
+			<cfscript>
+				var jasperReport = compile(arguments.jrxml);
+				var system = CreateObject("java", "java.lang.System");
+				var classpath = system.getProperty("java.class.path");
+				var daTitle = daJRXML.jasperReport.xmlAttributes.name;
+				var daXM = toString(daJRXML);
+				var params = reportparams;
+				var parameters = CreateObject("java", "java.util.HashMap");
+				var ka = structNew();
+				var daConnection = "";
+				var drs = "";
+				var LocaleOb = createObject("java","java.util.Locale");
+				var JRParameter = createObject("java","net.sf.jasperreports.engine.JRParameter");
+				var FileOb = createObject("java","java.io.File");
+
+				// we get "Cannot load com.apple.laf.AquaLookAndFeel" if we don't set crossPlat on OSX at least
+				var UIManager = createObject("java","javax.swing.UIManager");
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
+				if(NOT isStruct(params)) {
+					params = structNew();
+				}
+				var ka = StructKeyArray(params);
+				// convert params to hashmap
+				for(i=1; i LTE ArrayLen(ka); i=i+1){
+					parameters.put(ka[i], params[ka[i]]);
+				}
+				if(arguments.locale gt "") {
+					parameters.put(JRParameter.REPORT_LOCALE, LocaleOb[ucase(locale)]);
+				}
+				if(arguments.resourcebundle gt "") {
+					var rbStream = CreateObject("java","java.io.ByteArrayInputStream").init(readBinaryFile(arguments.resourceBundle));
+					var rb = createObject("java","java.util.PropertyResourceBundle").init(rbStream);
+					parameters.put(JRParameter.REPORT_RESOURCE_BUNDLE, rb);
+				}
+				/*
+				dicking around to get groovy expressions to work-- might need to specifically
+				use JRGroovyCompiler and set path.  Groovy works if all jars are in JVM classpath.
+
+				  jasperclasspath = getJasperreportsClassPath();
+				  system.setProperty("jasper.reports.compile.class.path",jasperclasspath);
+				  system.setProperty("java.class.path",jasperclasspath);
+				  system.setProperty("groovy.classpath",jasperclasspath);
+				  jrprops = CreateObject("java","net.sf.jasperreports.engine.util.JRProperties");
+				  jrprops.setProperty(jrprops.COMPILER_CLASSPATH, jasperclasspath);
+				*/
+
+				if(datasource gt "" && listLast(datasource,".") == "xml") {
+					daConnection = jrdatasource(datasource);
+				} else if(datasource eq "empty") {
+					daConnection = createObject("java","net.sf.jasperreports.engine.JREmptyDataSource");
+				} else if(datasource neq "") {
+					var manager = getPageContext().getDataSourceManager();
+					var dc = manager.getConnection(getPageContext(),datasource, javacast("null",""), javacast("null",""));
+					daConnection = dc.getConnection();
+				}
+
+				if (datafile !="") {
+					if(listLast(datafile,".") == "xml") {
+				 		//JRloader = createObject("java","net.sf.jasperreports.engine.util.JRLoader");
+						var JRXPathQueryExecuterFactory = createObject("java","net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory");
+						parameters.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, xmlParse(datafile));
+						parameters.put(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, "yyyy-MM-dd");
+						parameters.put(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, "##,####0.####");
+						parameters.put(JRXPathQueryExecuterFactory.XML_LOCALE, LocaleOb[ucase(localeLanguage)]);
+					} else {
+						throw(type="cfjasperreport.datafile.error", message="unsupported datafile type #datafile#");
+					}
+				}
+				var jasperFillManager = CreateObject("java","net.sf.jasperreports.engine.JasperFillManager");
+				//JasperFillManager.fillReportToFile(fileName, null,
+				    //            new JRXmlDataSource(new BufferedInputStream(new FileInputStream("northwind.xml")), "/Northwind/Customers"));
+				//System.err.println("Filling time : " + (System.currentTimeMillis() - start));
+				//System.exit(0);
+				var jasperPrint = "";
+					if(isQuery(newquery) OR newquery NEQ ""){
+						if (isQuery(newquery)) {
+							rs = newquery;
+						}
+						else {
+							stmt = CreateObject("java","java.sql.Statement");
+							stmt = daConnection.createStatement();
+							rs = CreateObject("java","java.sql.ResultSet");
+							rs = stmt.executeQuery(newquery);
+						}
+						drs = CreateObject("java", "net.sf.jasperreports.engine.JRResultSetDataSource");
+						drs.init(rs);
+						jasperPrint = CreateObject("java","net.sf.jasperreports.engine.JasperPrint");
+						try{
+						  jasperPrint = jasperFillManager.fillReport(jasperReport, parameters, drs);
+						}catch(JRException e){
+							throw(type="cfjasperreport.error", message=e.printStackTrace());
+						}
+					}
+					else if (datasource gt ""){
+						try{
+							if(isNull(daConnection)) {
+								throw(type="cfjasperreport.error.nullconnection", detail="connection for #datasource# is null");
+							}
+							jasperPrint = jasperFillManager.fillReport(jasperReport, parameters, daConnection);
+							try {
+								daConnection.close();
+							} catch(any e) {
+								// we do not care, only certain datasources need closing
+							}
+							if(isDefined("manager")) {
+								manager.releaseConnection(getPageContext(),dc);
+							}
+						}
+						catch(JRException e){
+							if(isDefined("manager")) {
+								manager.releaseConnection(getPageContext(),dc);
+							}
+							throw(type="cfjasperreport.error", message=e.printStackTrace());
+						}
+					} else if (structKeyExists(arguments,"query") and isQuery(arguments.query)){
+						try{
+							drs = CreateObject("java", "net.sf.jasperreports.engine.data.JRMapArrayDataSource");
+							var arrayQuery = querytoarray(query);
+							drs.init(arrayQuery);
+							jasperPrint = jasperFillManager.fillReport(jasperReport, parameters, drs);
+						}
+						catch(JRException e){
+							throw(type="cfjasperreport.error", message=e.printStackTrace());
+						}
+					} else {
+						try{
+							jasperPrint = jasperFillManager.fillReport(jasperReport, parameters);
+						}
+						catch(JRException e){
+							throw(type="cfjasperreport.error", message=e.printStackTrace());
+						}
+					}
+					///virtualizer.setReadOnly(true);
+					//jasperPrint = jasperFillManager.fillReport(jasperReport, parameters, jRXmlDataSource);
+					var jasperExportManager = CreateObject("java","net.sf.jasperreports.engine.JasperExportManager");
+				    var expparam = CreateObject("java", "net.sf.jasperreports.engine.JRExporterParameter");
+					var outStream = CreateObject("java","java.io.ByteArrayOutputStream").init();
+					var argy = '';
+				     //exporter.setParameter(expparam.OUTPUT_FILE_NAME,outfile);
+					if (exportType is "pdf") {
+						argy = jasperExportManager.exportReportToPdf(jasperPrint);
+					} else {
+						exporterType = ucase(left(exportType,1)) & lcase(right(exportType,len(exportType)-1));
+				    	jRExporterParameter = CreateObject("java", "net.sf.jasperreports.engine.JRExporterParameter");
+						jasperRtfExporter = CreateObject("java","net.sf.jasperreports.engine.export.JR#exporterType#Exporter");
+					  	jasperRtfExporter.setParameter(jRExporterParameter.JASPER_PRINT, jasperPrint);
+						jasperRtfExporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outstream);
+						jasperRtfExporter.exportReport();
+						argy = outstream;
+					}
+					outstream.close();
+					return argy;
+			</cfscript>
+		</cflock>
+	</cffunction>
+
+	<cffunction name="jrdatasource">
+		<cfargument name="datasource">
+		<cfargument name="datasourcexpath" default="" />
+		<cfscript>
+			var jRDataSource = "";
+			var FileOb = createObject("java","java.io.File");
+			if(listLast(datasource,".") eq "csv") {
+				jRDataSource = CreateObject("java","net.sf.jasperreports.engine.data.JRCsvDataSource").init(FileOb.init(datasource),"UTF-8");
+			} else if(datasource gt "" && listLast(datasource,".") == "xml") {
+				var jRXmlDataSource = CreateObject("java","net.sf.jasperreports.engine.data.JRXmlDataSource");
+					jRDataSource = jRXmlDataSource.init(FileOb.init(datasource));
+				if(arguments.datasourcexpath gt "") {
+					jRDataSource.datasource(datasourcexpath);
+				}
+			} else {
+				throw(type="cfjasperreport.datafile.error", message="unsupported datafile type #datafile#");
+			}
+			return jRDataSource;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="compile">
+		<cfargument name="jrxml" type="string" required="yes" />
+		<cfargument name="tofile" type="string" default="" />
+
+		<cfif fileExists(arguments.jrxml)>
+			<cfset var daJRXML = readJRXMLFile(arguments.jrxml) />
+		<cfelseif isXML(arguments.jrxml)>
+			<cfset var daJRXML = xmlparse(arguments.jrxml) />
+		<cfelse>
+			<cfthrow type="cfjasperreport.filenotfound" detail="the file #jrxml# could not be found or was not valid XML" />
+		</cfif>
+		<cfscript>
+			var system = CreateObject("java", "java.lang.System");
+			var classpath = system.getProperty("java.class.path");
+			var daTitle = daJRXML.jasperReport.xmlAttributes.name;
+			var daXM = toString(daJRXML);
+			var xmlBuffer = CreateObject("java","java.lang.String").init(daXM).getBytes();
+			var xmlInputStream = CreateObject("java","java.io.ByteArrayInputStream").init(xmlBuffer);
+			var jRXmlLoader = CreateObject ("Java","net.sf.jasperreports.engine.xml.JRXmlLoader");
+			var jasperDesign = jRXmlLoader.load(xmlInputStream);
+	 		var jasperCompileManager = CreateObject("java","net.sf.jasperreports.engine.JasperCompileManager");
+			var jasperVerify = jasperCompileManager.verifyDesign(jasperDesign);
+			///virtualizer = CreateObject("java", "net.sf.jasperreports.engine.fill.JRFileVirtualizer");
+			///virtualizer.init(2,javacast("String","/tmp"));
+			///params["REPORT_VIRTUALIZER"] = virtualizer;
+			// move the param structure to an array to evaluate
+			if(arrayLen(jasperVerify) gt 0) {
+				errors = "";
+				var x = 0;
+				for(x = 1; x lte arrayLen(jasperVerify); x++) {
+					errors = listAppend(errors, jasperVerify[x].getMessage() & "(" & jasperVerify[x].getSource().getText() & ")");
+				}
+				throw(type="jasperreports.report.design.flaw",detail=errors);
+			}
+			if(findNoCase("language=""groovy""",daXM)) {
+				var jThread = createObject("java","java.lang.Thread");
+				var cTL = jThread.currentThread().getContextClassLoader();
+				jThread.currentThread().setContextClassLoader(jasperCompileManager.getClass().getClassLoader());
+			}
+			try {
+				if(tofile neq "") {
+					var jasperReport = jasperCompileManager.compileReportToFile(tofile);
+				} else {
+					var jasperReport = jasperCompileManager.compileReport(jasperDesign);
+				}
+			} catch (any e) {
+				if(findNoCase("language=""groovy""",daXM)) {
+					jThread.currentThread().setContextClassLoader(cTL);
+				}
+				throw(type="jasperreports.report.compile.error",detail=e.message & " -- " & e.detail);
+			}
+			if(findNoCase("language=""groovy""",daXM)) {
+				jThread.currentThread().setContextClassLoader(cTL);
+			}
+			xmlInputStream.close();
+			return jasperReport;
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="onEndTag" output="yes" returntype="boolean">
+		<cfargument name="attributes" type="struct" />
+		<cfargument name="caller" type="struct" />
+		<cfargument name="generatedContent" type="string" />
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="readJRXMLFile" output="false" returntype="any" access="private">
+		<cfargument name="jrxmlfile" type="string" required="yes" />
+		<cfset var daJR = "" />
+		<cffile action="read" variable="daJR" file="#arguments.jrxmlfile#" charset="utf-8">
+		<cfreturn xmlparse(daJR) />
+	</cffunction>
+
+	<cffunction name="readBinaryFile" output="false" returntype="any" access="private">
+		<cfargument name="filepath" type="string" required="yes" />
+		<cfset var daFile = "" />
+		<cffile action="readbinary" variable="daFile" file="#arguments.filepath#">
+		<cfreturn daFile />
+	</cffunction>
+
+	<cffunction name="getJasperreportsClassPath" output="false" returntype="any" access="private">
+		<cfscript>
+			var jarsArry = CreateObject("java","net.sf.jasperreports.engine.JasperFillManager").getClass().getClassLoader().getURLs();
+			var system = CreateObject("java", "java.lang.System");
+			var classpath = system.getProperty("java.class.path");
+			var delim = system.getProperty("path.separator");
+			for(x = 1; x lte arrayLen(jarsArry); x++) {
+				jarpath = replace(jarsArry[x].toString(),"file:","");
+				classpath = listAppend(classpath,jarpath,delim);
+			}
+		</cfscript>
+		<cfreturn classpath />
+	</cffunction>
+
+	<cffunction name="reportToFile" output="false" returntype="void" access="private">
+		<cfargument name="fileContent" required="true" />
+		<cfargument name="reportfile" type="string" required="yes" />
+		<cfset var daJR = "" />
+		<cffile action="write" output="#arguments.fileContent#" file="#arguments.reportfile#">
+	</cffunction>
+
+	<cffunction name="download" output="true" returntype="void" access="private">
+		<cfargument name="fileName" required="true" />
+		<cfargument name="fileContent" required="true" />
+		<cfargument name="forceDownload" default="false" />
+		<cfset var cvalue = "" />
+		<cfset var out = "" />
+		<cfset var content = "" />
+		<cfset var context = "" />
+		<cfset var response = "" />
+		<cfsetting showdebugoutput="no">
+		<cfsetting enablecfoutputonly="yes">
+		<cfif arguments.forceDownload>
+			<cfset cvalue = 'attachment;' />
+		</cfif>
+		<cfset cvalue = cvalue & "filename=#arguments.fileName#" />
+		<cfheader name="Content-Disposition" value="#cvalue#" charset="utf-8">
+		<!---
+			<cfdump var="#filecontent#" abort>
+			--->
+		<!---
+			Doesn't work for some reason, maybe application.cfc?
+			<cfheader name="Content-Disposition" value="#cvalue#" charset="utf-8">
+			<cfcontent type="application/#exportType#" reset="true"><cfoutput>#arguments.fileContent#</cfoutput>
+			--->
+		<cfscript>
+			content = toBinary(arguments.fileContent);
+			 context = getPageContext();
+			 response = context.getResponse();
+			 out = response.getOutputStream();
+			 response.setContentType("application/#listLast(filename,'.')#");
+			 response.setContentLength(arrayLen(content));
+			 out.write(content);
+			 out.flush();
+			 out.close();
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="querytoarray" returntype="array" output="No">
+		<cfargument name="q" required="Yes" type="query">
+		<cfset var aTmp = arraynew(1)>
+		<cfset var qmeta = getMetaData(q)>
+		<cfset var types = {} />
+		<cfloop array="#qmeta#" index="met">
+			<cfset types[met.name] = met.typeName />
+		</cfloop>
+		<cfif q.recordcount>
+			<cfloop query="q">
+				<cfset stTmp = structNew()>
+				<cfloop list="#lcase(q.columnlist)#" index="col">
+					<cfif types[col] == "INTEGER">
+						<cfset stTmp["#col#"] = javaCast("int",q[col][currentRow]) />
+					<cfelse>
+						<cfset stTmp["#col#"] = q[col][currentRow] />
+					</cfif>
+				</cfloop>
+				<cfset arrayAppend(aTmp,stTmp)>
+			</cfloop>
+		<cfelse>
+			<cfset stTmp = structNew()>
+			<cfloop list="#lcase(q.columnlist)#" index="col">
+				<cfset stTmp["#col#"] = "">
+			</cfloop>
+			<cfset arrayAppend(aTmp,stTmp)>
+		</cfif>
+		<cfreturn aTmp>
+	</cffunction>
+
+
+</cfcomponent>

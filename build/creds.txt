@@ -1,0 +1,6 @@
+# credential tokens and values: replaces @tokens@ in src.xml, datasources.xml, mail.xml 
+#do not commit this file.  ignore if possible! 
+#gmail.user=someuser
+#gmail.password=fournick8
+dsn.username=sa
+dsn.password=

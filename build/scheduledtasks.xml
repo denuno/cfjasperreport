@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<schedule>
+<!--
+    <task hidden="false" interval="60" name="ci" port="@runwar.port@"
+        proxyPort="80" publish="false" readonly="false"
+        resolveUrl="false" startDate="{d '2010-05-24'}"
+        startTime="{t '00:00:00'}" timeout="5000000" url="http://localhost/@war.name@/tests/ci.cfm"/>
+-->
+</schedule>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="avery5160_titles" columnCount="3" printOrder="Horizontal" pageWidth="612" pageHeight="792" columnWidth="181" columnSpacing="18" leftMargin="16" rightMargin="16" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT * FROM people]]>
+	</queryString>
+	<field name="personId" class="java.lang.Integer"/>
+	<field name="firstName" class="java.lang.String"/>
+	<field name="lastName" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="16" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="72" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="16" width="178" height="14"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" pdfEncoding="Cp1252"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{personId}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="4" width="178" height="13"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{firstName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="30" width="178" height="13"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{lastName} +" : "+ $F{personId}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="43" width="178" height="12"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Some Cool Place]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="56" width="178" height="12"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[SomeWhere Else That is Also Cool]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="69" width="179" height="1" forecolor="#CCCCCC"/>
+			</line>
+		</band>
+		<band height="72">
+			<componentElement>
+				<reportElement x="19" y="7" width="144" height="30"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{personId}.toString()]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<textField>
+				<reportElement x="0" y="39" width="179" height="14"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{firstName}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="69" width="179" height="1" forecolor="#CCCCCC"/>
+			</line>
+			<textField>
+				<reportElement x="1" y="53" width="178" height="13"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{lastName} +" : "+ $F{personId}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="14" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

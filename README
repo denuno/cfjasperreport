@@ -1,0 +1,53 @@
+CFJASPERREPORT
+
+A tag for running JasperReports http://jasperforge.org/projects/jasperreports
+JasperReports does lovely barcodes, charts, crosstab reports... it's swell.
+
+Run reports using datasource name, SQL, CFML Queries, or CFML structures.
+
+Examples: 
+
+export as PDF:
+<jr:jasperreport jrxml="#path#/report.jrxml" 
+	exportfile="#outpath#/rockn.pdf" exporttype="pdf"/>
+
+export as Excel file:
+<jr:jasperreport jrxml="#path#/report.jrxml" 
+	exportfile="#outpath#/rockn.xls" exporttype="xls"/>
+
+export as PDF using query:
+<jr:jasperreport jrxml="#datapath#/cfqueryFood.jrxml" query="#myQuery#" 
+	exportfile="#workpath#/cfqueryFood.pdf" exporttype="pdf"/>
+
+export as PDF using datasource name:
+<jr:jasperreport jrxml="#datapath#/test.jrxml" dsn="jasperreport" 
+	exportfile="#workpath#/rockn.pdf" exporttype="pdf"/>
+
+DEVELOPMENT
+
+This project leverages cfdistro https://github.com/denuno/cfdistro in the
+default location of: $HOME/cfdistro
+
+Any mappings, datasources, etc., are configured via the files in ./build
+
+The extension properties are stored in the build.extension.properties file.
+This would be author, extension name, and paths to tag, lib, etc., directories.
+
+To build the extension:
+./cfjasperreport build.extension
+
+Build artifact: ./dist/cfjasperreport-${version}-extension.zip
+
+Build and start the development server (defaults to 127.0.0.1:8088):
+./cfjasperreport build
+./cfjasperreport server.start.fg
+
+The tests are located in ./tests and are mapped to /tests
+
+Tests for the tag:
+tests/cfjasperreport/tag
+
+Tests for extension building and installing:
+tests/cfjasperreport/extension
+
+There is an H2 datasource for tests called "jasperreports"

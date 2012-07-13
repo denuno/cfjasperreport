@@ -1,0 +1,46 @@
+<project name="distro.build" default="build" basedir="./" xmlns:antcontrib="antlib:net.sf.antcontrib">
+
+	<loadproperties srcfile="build.properties"/>
+	<import file="${cfdistro.build.file}"/>
+
+	<target name="build" depends="cfdistro.build">
+		<!-- add mappings -->
+		<!--
+		<mapping physical="${basedir}/../../docs" virtual="/docs"/>
+		-->
+		<mapping physical="${basedir}/../tests" virtual="/tests"/>
+		<!-- add custom tags example
+		<customtag physical="${src.dir}/cfdistro/ext/cfmltags/cfantrunner" virtual="/cfantrunner"/>
+		 -->
+		<!-- use fileServlet to map external resources (css, images, etc.) -->
+		<!--
+		<fileservlet servletname="fileServlet" directory="${src.dir}/../pub" urlpattern="/pub/*"/>
+		<mapping physical="${basedir}/../pub" virtual="/pub"/>
+		-->
+		<!-- add urlrewrite filter and rewrite rules -->
+		<!-- getting "Failed to specify text in replace" means you need to escape & like so:  &amp;amp;-->
+		<!--
+		<antcontrib:runtarget target="urlrewritefilter.servlet.install" />
+		<urlrewrite name="root" note="MAP / TO DEFAULT VIEW" 
+			from="^/$" to="/index.cfm" type="forward"/>
+		<urlrewrite name="rootToPub" note="SERVE EVERYTHING FROM PUB"
+			from="/(.*)" to="/pub/$1" type="forward"/>
+		<urlrewriteout name="pubToRoot" from="^/pub/(.*)" to="/$1"/>
+		<urlrewriteout name="rootToContextPath" from="/(.*)" to="%{context-path}/$1" type="forward"/>
+		-->
+	</target>	
+
+	<!-- these are just here for the Eclipse Ant UI ordering -->
+	<target name="build.start.launch">
+		<antcontrib:runtarget target="cfdistro.build.start.launch" />
+	</target>	
+
+	<target name="build.start" depends="build">
+		<antcontrib:runtarget target="server.start" />
+	</target>	
+
+	<target name="build.stop">
+		<antcontrib:runtarget target="server.stop" />
+	</target>	
+	
+</project>

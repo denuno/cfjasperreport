@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mail>
+	<settings log="./temp/logs/mail.log" spool-enable="true"
+		spool-interval="5" timeout="30" />
+	<servers>
+		<server password="@gmail.password@"
+			port="587" smtp="smtp.gmail.com" ssl="false" tls="true" username="@gmail.user@" />
+	</servers>
+</mail>
