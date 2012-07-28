@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <mappings>
   <mapping physical="@src.dir@/cfjasperreport" virtual="/cfjasperreport"/>
-  <mapping physical="@src.dir@/mxunit" virtual="/mxunit"/>
 <mapping physical="./../tests" virtual="/tests"/>
+<mapping physical="/Users/valliant/cfdistro/ext/mappings/org.mxunit/core/2.1.1//mxunit" virtual="/mxunit"/>
 </mappings>

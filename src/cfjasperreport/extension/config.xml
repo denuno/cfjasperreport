@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <config>
 	<info>
-		<id>@extension.id@</id>
-		<type>@extension.Type@</type>
-		<name>@extension.Name@</name>
-		<label>@extension.Label@</label>
-		<codename>@extension.Codename@</codename>
-		<description><![CDATA[@extension.Description@]]></description>
-		<sources>@extension.Sources@</sources>
-		<author>@extension.Author@</author>
-		<category>@extension.Category@</category>
-		<image>@extension.Image@</image>
-		<support>@extension.Support@</support>
-		<documentation>@extension.Documentation@</documentation>
-		<mailinglist>@extension.mailinglist@</mailinglist>
-		<created>@build.date@</created>
-		<version>@build.number@</version>
-		<packaged-by>@extension.packagedby@</packaged-by>
-		<paypal>@extension.paypal@</paypal>
+		<id>${extension.id}</id>
+		<type>${extension.type}</type>
+		<name>cfsshd-${extension.version}-extension</name>
+		<label><![CDATA[${extension.label}]]></label>
+		<codename><![CDATA[${extension.codename}]]></codename>
+		<description><![CDATA[${extension.description}]]></description>
+		<sources><![CDATA[${extension.sources}]]></sources>
+		<author><![CDATA[${extension.author}]]></author>
+		<category><![CDATA[${extension.category}]]></category>
+		<image>${extension.image}</image>
+		<support><![CDATA[${extension.support}]]></support>
+		<documentation><![CDATA[${extension.documentation}]]></documentation>
+		<mailinglist><![CDATA[${extension.mailinglist}]]></mailinglist>
+		<created>${build.date}</created>
+		<version>${extension.version}</version>
+		<packaged-by><![CDATA[${extension.packagedby}]]></packaged-by>
+		<paypal><![CDATA[${extension.paypal}]]></paypal>
+		<licensetemplate>${extension.license}</licensetemplate>
 	</info>
 	<step label="" description="">
 		<group label="Settings" description="Some general settings used for the application">

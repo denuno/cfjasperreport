@@ -1,2 +1,4 @@
 /dist
 /.gitold
+.DS_Store
+.svn

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <src>
 	<project>
-	<!-- project sources
-		<src dest="@src.dir@/../" type="svn" 
-		uri="http://subversion.assembla.com/svn/cfdistro/trunk/cfdistro" 
+		<src dest="@src.dir@/../" type="git" 
+		uri="git://github.com/denuno/cfjasperreport.git" 
 		user="" password="" />
-	-->
 	</project>
 	<sources>
 <!-- 	MXUnit 2.1
@@ -13,9 +11,6 @@
 		uri="http://mxunit.googlecode.com/svn/mxunit/tags/2.0.1"
 		user="" password="" />
  -->
-		<src dest="@src.dir@/mxunit" type="git" 
-		uri="https://github.com/mxunit/mxunit.git"
-		user="" password="" />
 <!--	MXUnit trunk
 -->
 <!--	CFWheels
