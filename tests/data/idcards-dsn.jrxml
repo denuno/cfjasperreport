@@ -3,6 +3,8 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="imageurl" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="imagepath" isForPrompting="false" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select * from employees]]>
 	</queryString>
@@ -38,11 +40,11 @@
 			</textField>
 			<image>
 				<reportElement x="0" y="0" width="288" height="51"/>
-				<imageExpression class="java.lang.String"><![CDATA["/workspace/cfjasperreport/tests/data/logo.jpg"]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA[$P{imagepath}]]></imageExpression>
 			</image>
 			<image>
 				<reportElement x="0" y="51" width="54" height="50"/>
-				<imageExpression class="java.lang.String"><![CDATA["http://127.0.0.1:8088/tests/data/images/avatars/1.jpg"]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA[$P{imageurl}]]></imageExpression>
 			</image>
 			<componentElement>
 				<reportElement x="95" y="71" width="193" height="30"/>
