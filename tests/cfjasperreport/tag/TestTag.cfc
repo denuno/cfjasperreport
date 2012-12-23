@@ -1,4 +1,4 @@
-<cfcomponent displayname="TestInstall"  extends="mxunit.framework.TestCase">
+<cfcomponent displayname="TestTag"  extends="mxunit.framework.TestCase">
 
 	<cfimport taglib="/cfjasperreport/tag/cfjasperreport" prefix="jr" />
 
@@ -21,6 +21,7 @@
 				<cfif findNoCase("is not defined in directory",cfcatch.message) OR
 						findNoCase("no definition for the class",cfcatch.message)>
 					<cfset install = createObject("component","tests.cfjasperreport.extension.TestInstall") />
+					<cfset install.beforeTests() />
 					<cfset install.setUp() />
 					<cfset install.testInstallDevCustomTag(uninstall=false) />
 					<cfadmin action="restart"
@@ -34,6 +35,7 @@
 	</cffunction>
 
 	<cffunction name="setUp" returntype="void" access="public">
+		<cfset variables.defaultconfig = {"mixed":{"isBuiltInTag":true,"installTestPlugin":true}} />
  	</cffunction>
 
 	<cffunction name="teardown" returntype="void" access="public">
@@ -57,6 +59,7 @@
 	</cffunction>
 
 	<cffunction name="testjasperreportsCFQueryTagAvery5160BarcodePdf">
+		<cfset variables.defaultconfig = {"mixed":{"isBuiltInTag":true,"installTestPlugin":true}} />
 		<cfset var myQuery = QueryNew("")>
 		<cfset var idArray = ArrayNew(1)>
 		<cfset idArray[1] = "111111">
@@ -128,6 +131,10 @@
 
 	<cffunction name="testjasperreportsTagXls">
 		<jr:jasperreport jrxml="#datapath#/test.jrxml" exportfile="#workpath#/rockn.xls" exporttype="xls"/>
+	</cffunction>
+
+	<cffunction name="testjasperreportsTagUTF8">
+		<jr:jasperreport jrxml="#datapath#/testUTF.jrxml" exportfile="#workpath#/rockn.pdf" exporttype="pdf"/>
 	</cffunction>
 
 </cfcomponent>

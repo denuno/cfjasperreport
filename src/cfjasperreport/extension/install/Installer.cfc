@@ -21,21 +21,21 @@
 			<cfif config.isBuiltInTag>
 				<cfset cfcext = '<cfcomponent extends="#variables.extensionTag#/cfc/#rereplace(variables.extensionTag,"^cf","")#"></cfcomponent>' />
 				<cffile action="write" file="#getLibraryPath()#/tag/#rereplace(variables.extensionTag,'^cf','')#.cfc" output="#cfcext#" />
-				<cfset directoryCopy("#path#/tags","#getLibraryPath()#/tag")>
+				<cfset dirCopy("#path#/tags","#getLibraryPath()#/tag")>
 				<cfset addCustomTagsMapping("#getLibraryPath()#/tag/#variables.extensionTag#") />
 			<cfelse>
-				<cfset directoryCopy("#path#/tags","#getLibraryPath()#/../customtags/")>
+				<cfset dirCopy("#path#/tags","#getLibraryPath()#/../customtags/")>
 				<cfset addCustomTagsMapping("#getLibraryPath()#/../customtags/#variables.extensionTag#") />
 			</cfif>
 		</cfif>
 		<cfif find("functions",standards)>
-			<cfset directoryCopy("#path#/functions","#getLibraryPath()#/function")>
+			<cfset dirCopy("#path#/functions","#getLibraryPath()#/function")>
 		</cfif>
 		<cfif find("plugins",standards)>
-			<cfset directoryCopy("#path#/plugins",getPluginDir())>
+			<cfset dirCopy("#path#/plugins",getPluginDir())>
 		</cfif>
 		<cfif find("cdrivers",standards)>
-			<cfset directoryCopy("#path#/cdrivers",getCacheDriverDir())>
+			<cfset dirCopy("#path#/cdrivers",getCacheDriverDir())>
 		</cfif>
 		<cfif directoryExists(getDirectoryFromPath(getMetadata(this).path)&"test")>
 			<cfif config.installTestPlugin>
@@ -119,7 +119,7 @@
 		hint="called from Railo to install application">
 		<cfargument name="error" type="struct" />
 		<cfargument name="path" type="string" />
-		<cfset directoryCopy(path,"#getLibraryPath()#/../lib")>
+		<cfset dirCopy(path,"#getLibraryPath()#/../lib")>
 		<!---
 		<cfdirectory action="list" name="qJars" directory="#path#" filter="*.jar" sort="name desc"/>
 		<cfsetting requesttimeout="360" />
@@ -225,7 +225,7 @@
 	@author Joe Rinehart (joe.rinehart@gmail.com)
 	@version 2, February 4, 2010
 	--->
-	<cffunction name="directoryCopy" output="true">
+	<cffunction name="dirCopy" output="true">
 	    <cfargument name="source" required="true" type="string">
 	    <cfargument name="destination" required="true" type="string">
 	    <cfargument name="nameconflict" required="true" default="overwrite">
@@ -242,7 +242,7 @@
 	        <cfif contents.type eq "file">
 	            <cffile action="copy" source="#arguments.source#/#name#" destination="#arguments.destination#/#name#" nameconflict="#arguments.nameConflict#">
 	        <cfelseif contents.type eq "dir">
-	            <cfset directoryCopy(arguments.source & "/" & name, arguments.destination & "/" & name) />
+	            <cfset dirCopy(arguments.source & "/" & name, arguments.destination & "/" & name) />
 	        </cfif>
 	    </cfloop>
 	</cffunction>
@@ -292,7 +292,7 @@
 		</cfif>
 		<cffile action="write" file="#pluginDir#/#testfilename#" output="#test#" />
 		<cfif listLast(getDirectoryFromPath(testfile),"\/") eq "test">
-			<cfset directoryCopy(getDirectoryFromPath(testfile),pluginDir) />
+			<cfset dirCopy(getDirectoryFromPath(testfile),pluginDir) />
 		</cfif>
 		<cfadmin action="reload" type="#request.adminType#" password="#session["password"&request.adminType]#"/>
 	</cffunction>

@@ -4,10 +4,8 @@
   	<cffunction name="beforeTests" returntype="void" access="public">
 		<cfset variables.extensionTag = "cfjasperreport" />
  		<cfset variables.Install = createObject("component","#variables.extensionTag#.extension.Install") />
-		<cfdirectory action="list" directory="/#variables.extensionTag#/../../dist/" name="files" sort="desc" />
+		<cfdirectory action="list" directory="/#variables.extensionTag#/../../dist/" name="files" sort="desc" filter="*.zip"/>
 		<cfset variables.extensionzip = "/#variables.extensionTag#/../../dist/#files.name[1]#" />
-		<cfset variables.defaultconfig = {"mixed":{"isBuiltInTag":true,"installTestPlugin":true}} />
-		<cfset request.adminType = "web" />
 		<cfset var passw = "">
 		<cfif NOT fileExists(variables.extensionzip)>
 			<cfset var build = createObject("component","TestBuild") />
@@ -18,6 +16,8 @@
 
   <cffunction name="setUp" returntype="void" access="public">
 		<cffile action="read" file="#expandpath('/tests')#/cfadminpassword.txt" variable="passw" />
+		<cfset variables.defaultconfig = {"mixed":{"isBuiltInTag":true,"installTestPlugin":true}} />
+		<cfset request.adminType = "web" />
 		<cfset session.passwordweb = passw />
 		<cfset session.passwordserver = passw />
   </cffunction>
@@ -41,10 +41,10 @@
 	<cffunction name="testAddJars">
 		<cfargument name="uninstall" default="true">
 		<cfscript>
-			var error = structNew();
+			var err = structNew();
 			var path = expandPath("/#variables.extensionTag#/lib/");
 			var config = variables.defaultconfig;
-			var result = variables.Install.addJars(error,path,config);
+			var result = variables.Install.addJars(err,path,config);
 	//		debug(result);
 //			assertEquals(true,result.status,result.message);
 			if(uninstall) {

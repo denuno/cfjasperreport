@@ -26,6 +26,7 @@
 				<cfif findNoCase("is not defined in directory",cfcatch.message) OR
 						findNoCase("no definition for the class",cfcatch.message)>
 					<cfset install = createObject("component","tests.cfjasperreport.extension.TestInstall") />
+					<cfset install.beforeTests() />
 					<cfset install.setUp() />
 					<cfset install.testInstallDevCustomTag(uninstall=false) />
 					<cfadmin action="restart"
@@ -107,7 +108,8 @@ h2 issue of super slow
 
 	<cffunction name="testjasperreportsTagIdCardsWithImgLinksPdf">
 		<cfsetting requesttimeout="120">
-		<jr:jasperreport jrxml="#datapath#/idcards-dsn.jrxml" dsn="jasperreport" exportfile="#workpath#/idcards-dsn.pdf" exporttype="pdf"/>
+		<cfset params = {imagepath:"#datapath#/logo.jpg",imageurl:"#cgi.http_host#/tests/data/images/avatars/1.jpg"} />
+		<jr:jasperreport jrxml="#datapath#/idcards-dsn.jrxml" dsn="jasperreport" exportfile="#workpath#/idcards-dsn.pdf" params="#params#" exporttype="pdf"/>
 	</cffunction>
 
 	<cffunction name="testjasperreportsTagPdf">
