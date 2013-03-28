@@ -4,6 +4,7 @@
   	<cffunction name="beforeTests" returntype="void" access="public">
 		<cfset variables.extensionTag = "cfjasperreport" />
  		<cfset variables.Install = createObject("component","#variables.extensionTag#.extension.Install") />
+		<cfset variables.defaultconfig = {"mixed":{"isBuiltInTag":true,"installTestPlugin":true}} />
 		<cfdirectory action="list" directory="/#variables.extensionTag#/../../dist/" name="files" sort="desc" filter="*.zip"/>
 		<cfset variables.extensionzip = "/#variables.extensionTag#/../../dist/#files.name[1]#" />
 		<cfset var passw = "">
@@ -169,7 +170,6 @@
 			var error = structNew();
 			var config = variables.defaultconfig;
 			testAddJars(uninstall);
-			var config = variables.defaultconfig;
 			try {
 				var result = variables.Install.addCustomTagsMapping("#expandPath("/"&variables.extensionTag)#/src/tag");
 			} catch (any e) {
