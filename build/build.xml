@@ -10,7 +10,7 @@
 	</target>
 	
 	<target name="get.deps">
-		<property name="cfjr.dep.dir" value="${src.dir}/cfjasperreport/lib"/>
+		<property name="cfjr.dep.dir" value="${src.dir}/cfjasperreport/tag/cfjasperreport/cfc/lib/jars"/>
 	    <mvn-repo id="jasperreports.repo" url="http://jasperreports.sourceforge.net/maven2/" />
 		<dependency repoId="jasperreports.repo" groupId="com.lowagie" artifactId="itext" version="2.1.7.js2" dest="${cfjr.dep.dir}" type="jar" unzip="false">
 	      <exclusions>
@@ -30,6 +30,7 @@
       	<mvn-get-deps todir="${cfjr.dep.dir}">
 			<dependency groupId="net.sf.barcode4j" artifactId="barcode4j" version="2.1"/>
 			<dependency groupId="net.sourceforge.barbecue" artifactId="barbecue" version="1.5-beta1"/>
+			<dependency groupId="org.apache.poi" artifactId="poi" version="3.7"/>
       	</mvn-get-deps>
 	</target>
 

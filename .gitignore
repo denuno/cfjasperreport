@@ -1,4 +1,5 @@
 /dist
 /.gitold
+/src/cfjasperreport/tag/cfjasperreport/cfc/lib/jars
 .DS_Store
 .svn

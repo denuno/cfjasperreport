@@ -11,27 +11,7 @@
 		<cfset directoryCreate(workpath) />
 
 		<cfset datapath = "#getDirectoryFromPath(getMetadata(this).path)#../../data" />
-		<cftry>
-			<jr:jasperreport jrxml="#datapath#/simpleTest.jrxml" exportfile="/tmp/delme.pdf" exporttype="pdf"/>
-			<cfcatch>
-				<cfif cfcatch.type == "cfjasperreport.filenotfound">
-				<cfthrow message="test data dir incorrect! : #datapath#/test.jrxml" />
-				</cfif>
-				<cfset debug(cfcatch) />
-				<cfif findNoCase("is not defined in directory",cfcatch.message) OR
-						findNoCase("no definition for the class",cfcatch.message)>
-					<cfset install = createObject("component","tests.cfjasperreport.extension.TestInstall") />
-					<cfset install.beforeTests() />
-					<cfset install.setUp() />
-					<cfset install.testInstallDevCustomTag(uninstall=false) />
-					<cfadmin action="restart"
-						type="server"
-						password="#session.passwordserver#"
-						remoteClients=""/>
-					<cfthrow message="had to install the tag.  Try again now" detail="had to install the tag.  Try again now. (#cfcatch.message#)">
-				</cfif>
-			</cfcatch>
-		</cftry>
+
 	</cffunction>
 
 	<cffunction name="setUp" returntype="void" access="public">
