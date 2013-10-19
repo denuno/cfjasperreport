@@ -23,6 +23,21 @@ export as PDF using datasource name:
 <jr:jasperreport jrxml="#datapath#/test.jrxml" dsn="jasperreport" 
 	exportfile="#workpath#/rockn.pdf" exporttype="pdf"/>
 
+
+INSTALLATION
+
+Install from an extension provider or just put ./src/cfjasperreport in your
+web root and import the taglib::
+
+<cfimport taglib="/cfjasperreport/tag/cfjasperreport" prefix="jr" />
+
+Calling it like so:
+
+<jr:jasperreport jrxml="#datapath#/avery5160.jrxml" exportfile="#workpath#/avery5160.pdf" exporttype="pdf"/>
+
+See ./tests/cfjasperreport/tag/TestTag.cfc for more examples.
+
+
 DEVELOPMENT
 
 This project leverages cfdistro https://github.com/denuno/cfdistro in the
