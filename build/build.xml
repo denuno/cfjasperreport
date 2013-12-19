@@ -8,6 +8,21 @@
 	<target name="build" depends="cfdistro.build, get.deps">
 		<mapping physical="${basedir}/../tests" virtual="/tests"/>
 	</target>
+
+	<target name="build.mvn.deploy" depends="extension.build">
+		<property name="mvn.repo.dest" value="local" />
+		<property name="mvn.repo.dest" value="remote" />
+		<property name="mvn.repo.id" value="mvn.repo.${mvn.repo.dest}" />
+		<property name="maven.repo.local" location="${cfdistro.basedir}/artifacts" />
+		<mvn-repo id="mvn.repo.local" url="file://${maven.repo.local}/" />
+		<property name="mvn.type" value="release" />
+		<delete file="${dist.dir}/cfjasperreport.zip" />
+		<zip destfile="${dist.dir}/cfjasperreport.zip" update="false">
+		  <fileset dir="${src.dir}/cfjasperreport" excludes="extension" />
+		</zip>
+		<pom-and-deploy pomid="cfjasperreport.pom" packaging="zip" artifact="${dist.dir}/cfjasperreport.zip" groupId="cfml.cfjasperreport"
+		artifactId="cfjasperreport" version="${extension.version}" name="cfjasperreport" />
+	</target>
 	
 	<target name="get.deps">
 		<property name="cfjr.dep.dir" value="${src.dir}/cfjasperreport/tag/cfjasperreport/cfc/lib/jars"/>
