@@ -26,8 +26,11 @@ export as PDF using datasource name:
 
 INSTALLATION
 
-Install from an extension provider or just put ./src/cfjasperreport in your
-web root and import the taglib::
+Install from an extension provider, or download a version from here:
+
+http://cfmlprojects.org/artifacts/cfml/cfjasperreport/cfjasperreport/
+
+and unzip it to cfjasperreport in your web root (afterwards you should have {webroot}/cfjasperreport/tag) and then import the taglib::
 
 <cfimport taglib="/cfjasperreport/tag/cfjasperreport" prefix="jr" />
 
