@@ -26,6 +26,7 @@
 	
 	<target name="get.deps">
 		<property name="cfjr.dep.dir" value="${src.dir}/cfjasperreport/tag/cfjasperreport/cfc/lib/jars"/>
+		<property name="mvn.type" value="snapshot" />
 	    <mvn-repo id="jasperreports.repo" url="http://jasperreports.sourceforge.net/maven2/" />
 		<dependency repoId="jasperreports.repo" groupId="com.lowagie" artifactId="itext" version="2.1.7.js2" dest="${cfjr.dep.dir}" type="jar" unzip="false">
 	      <exclusions>
@@ -34,7 +35,7 @@
 	        <exclusion groupId="bouncycastle" artifactId="bcmail-jdk14"/>
 	      </exclusions>
 		</dependency>
-		<dependency groupId="net.sf.jasperreports" artifactId="jasperreports" version="5.5.0" dest="${cfjr.dep.dir}" type="jar" unzip="false">
+		<dependency groupId="net.sf.jasperreports" artifactId="jasperreports" version="5.5.1" dest="${cfjr.dep.dir}" type="jar" unzip="false">
 	      <exclusions>
 	        <exclusion groupId="xml-apis" artifactId="xml-apis"/>
 	        <exclusion groupId="bouncycastle" artifactId="bctsp-jdk14"/>
@@ -50,7 +51,7 @@
 	</target>
 
 	<target name="build.deps.pom" description="build the dependency artifact">
-		<property name="source.deps.dir" value="${user.home}/Downloads/jasperreports-5.0.0/" />
+		<property name="source.deps.dir" value="${user.home}/Downloads/jasperreports-5.5.1/" />
 	    <property name="mvn.repo.id" value="mvn.repo.local" />
 	    <property name="maven.repo.local" location="${cfdistro.basedir}/artifacts" />
 		<mvn-repo id="mvn.repo.local" url="file://${maven.repo.local}/" />
@@ -62,7 +63,7 @@
         	 excludes="docs/**,jasperreports-applet-*.jar,jasperreports-javaflow-*.jar" />
 		</zip>
 		<pom-and-deploy pomid="${distro.name}.deps.pom" packaging="zip" artifact="${dist.dir}/${distro.name}-deps.zip"
-		 groupId="cfml.extension.${distro.name}" artifactId="${distro.name}.deps" version="5.0.0.0" name="${distro.name}.deps"/>
+		 groupId="cfml.extension.${distro.name}" artifactId="${distro.name}.deps" version="5.5.1.0" name="${distro.name}.deps"/>
 	</target>	
 	
 </project>
