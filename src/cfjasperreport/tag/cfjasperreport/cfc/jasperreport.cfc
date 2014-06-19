@@ -415,7 +415,11 @@
 				<cfset stTmp = structNew()>
 				<cfloop list="#lcase(q.columnlist)#" index="col">
 					<cfif types[col] == "INTEGER">
-						<cfset stTmp["#col#"] = javaCast("int",q[col][currentRow]) />
+						<cfif len(trim(q[col][currentRow]))>
+							<cfset stTmp["#col#"] = javaCast("int",q[col][currentRow]) />
+						<cfelse>
+							<cfset stTmp["#col#"] = javaCast("null","") />
+						</cfif>
 					<cfelse>
 						<cfset stTmp["#col#"] = q[col][currentRow] />
 					</cfif>
