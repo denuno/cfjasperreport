@@ -48,7 +48,8 @@ Code:
 		<!--- run any needed report example setup stuff --->
 		<cfinclude template="examples/#form.exampledir#/setup.cfm">
 		<!--- run the report with whatever was set in setup.cfm --->
-		<cf_jasperreport
+		<cfimport taglib="/cfjasperreport/tag/cfjasperreport" prefix="jr" />
+		<jr:jasperreport
 			jrxml="#thisHereDir#/examples/#form.exampledir#/reports/#form.jrxml#"
 			filename="#listFirst(form.jrxml,'.')#"
 			dsn="#dsname#"

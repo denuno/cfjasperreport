@@ -26,16 +26,17 @@
 	
 	<target name="get.deps">
 		<property name="cfjr.dep.dir" value="${src.dir}/cfjasperreport/tag/cfjasperreport/cfc/lib/jars"/>
+    <delete dir="${cfjr.dep.dir}" />
 		<property name="mvn.type" value="snapshot" />
-	    <mvn-repo id="jasperreports.repo" url="http://jasperreports.sourceforge.net/maven2/" />
-		<dependency repoId="jasperreports.repo" groupId="com.lowagie" artifactId="itext" version="2.1.7.js2" dest="${cfjr.dep.dir}" type="jar" unzip="false">
+    <mvn-repo id="jasperreports.repo" url="http://jasperreports.sourceforge.net/maven2/" />
+		<dependency repoId="jasperreports.repo" groupId="com.lowagie" artifactId="itext" version="2.1.7.js3" dest="${cfjr.dep.dir}" type="jar" unzip="false">
 	      <exclusions>
 	        <exclusion groupId="bouncycastle" artifactId="bctsp-jdk14"/>
 	        <exclusion groupId="bouncycastle" artifactId="bcprov-jdk14"/>
 	        <exclusion groupId="bouncycastle" artifactId="bcmail-jdk14"/>
 	      </exclusions>
 		</dependency>
-		<dependency groupId="net.sf.jasperreports" artifactId="jasperreports" version="5.5.1" dest="${cfjr.dep.dir}" type="jar" unzip="false">
+		<dependency groupId="net.sf.jasperreports" artifactId="jasperreports" version="6.1.1" dest="${cfjr.dep.dir}" type="jar" unzip="false">
 	      <exclusions>
 	        <exclusion groupId="xml-apis" artifactId="xml-apis"/>
 	        <exclusion groupId="bouncycastle" artifactId="bctsp-jdk14"/>
@@ -46,8 +47,8 @@
       	<mvn-get-deps todir="${cfjr.dep.dir}">
 			<dependency groupId="net.sf.barcode4j" artifactId="barcode4j" version="2.1"/>
 			<dependency groupId="net.sourceforge.barbecue" artifactId="barbecue" version="1.5-beta1"/>
-			<dependency groupId="org.apache.poi" artifactId="poi" version="3.7"/>
-      	</mvn-get-deps>
+			<dependency groupId="org.apache.poi" artifactId="poi" version="3.10.1"/>
+  	</mvn-get-deps>
 	</target>
 
 	<target name="build.deps.pom" description="build the dependency artifact">

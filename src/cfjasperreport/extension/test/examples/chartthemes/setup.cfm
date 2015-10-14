@@ -1,25 +1,27 @@
 <cfset thisDir = getDirectoryFromPath(getCurrentTemplatePath()) />
 <cfset resourcebundle = thisDir & "reports/AllCharts.properties" />
+<cfimport taglib="/cfjasperreport/tag/cfjasperreport" prefix="jr" />
+
 <cfloop from="1" to="7" index="i">
-	<cf_jasperreport action="jrdatasource" datasource="#thisdir#/data/categoryDatasource.csv" resultsvar="ds">
+	<jr:jasperreport action="jrdatasource" datasource="#thisdir#/data/categoryDatasource.csv" resultsvar="ds">
 	<cfset ds.setUseFirstRowAsHeader(true) />
 	<cfset reportparams["categoryDatasource#i#"] = ds />
 </cfloop>
 <cfloop from="1" to="2" index="i">
-	<cf_jasperreport action="jrdatasource" datasource="#thisdir#/data/pieDatasource.csv" resultsvar="ds">
+	<jr:jasperreport action="jrdatasource" datasource="#thisdir#/data/pieDatasource.csv" resultsvar="ds">
 	<cfset ds.setUseFirstRowAsHeader(true) />
 	<cfset reportparams["pieDatasource#i#"] = ds />
 </cfloop>
-<cf_jasperreport action="jrdatasource" datasource="#thisdir#/data/timePeriodDatasource.csv" resultsvar="ds">
+<jr:jasperreport action="jrdatasource" datasource="#thisdir#/data/timePeriodDatasource.csv" resultsvar="ds">
 	<cfset ds.setUseFirstRowAsHeader(true) />
 <cfset reportparams["timePeriodDatasource1"] = ds />
 <cfloop from="1" to="3" index="i">
-	<cf_jasperreport action="jrdatasource" datasource="#thisdir#/data/timeSeriesDatasource.csv" resultsvar="ds">
+	<jr:jasperreport action="jrdatasource" datasource="#thisdir#/data/timeSeriesDatasource.csv" resultsvar="ds">
 	<cfset ds.setUseFirstRowAsHeader(true) />
 	<cfset reportparams["timeSeriesDatasource#i#"] = ds />
 </cfloop>
 <cfloop from="1" to="5" index="i">
-	<cf_jasperreport action="jrdatasource" datasource="#thisdir#/data/xyDatasource.csv" resultsvar="ds">
+	<jr:jasperreport action="jrdatasource" datasource="#thisdir#/data/xyDatasource.csv" resultsvar="ds">
 	<cfset ds.setUseFirstRowAsHeader(true) />
 	<cfset reportparams["xyDatasource#i#"] = ds />
 </cfloop>
