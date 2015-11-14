@@ -36,7 +36,7 @@
 	        <exclusion groupId="bouncycastle" artifactId="bcmail-jdk14"/>
 	      </exclusions>
 		</dependency>
-		<dependency groupId="net.sf.jasperreports" artifactId="jasperreports" version="6.1.1" dest="${cfjr.dep.dir}" type="jar" unzip="false">
+		<dependency groupId="net.sf.jasperreports" artifactId="jasperreports" version="6.2.0" dest="${cfjr.dep.dir}" type="jar" unzip="false">
 	      <exclusions>
 	        <exclusion groupId="xml-apis" artifactId="xml-apis"/>
 	        <exclusion groupId="bouncycastle" artifactId="bctsp-jdk14"/>

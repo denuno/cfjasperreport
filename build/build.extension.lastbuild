@@ -1,9 +1,9 @@
 #Extension Build Information
-#Fri, 14 Mar 2014 23:08:24 -0600
+#Sun, 25 Oct 2015 14:43:11 -0600
 
-build.date=03-14-2014 23\:08\:18
-build.time=23\:08\:18
-build.timestamp=03-14-2014 at 23\:08\:18
+build.date=10-25-2015 14\:43\:09
+build.time=14\:43\:09
+build.timestamp=10-25-2015 at 14\:43\:09
 build.lastcommithash=
 
-extension.version=1.0.0.0
+extension.version=6.1.1.000

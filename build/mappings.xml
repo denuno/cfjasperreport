@@ -3,4 +3,5 @@
   <mapping physical="@src.dir@/cfjasperreport" virtual="/cfjasperreport"/>
 <mapping physical="@ext.mappings.dir@/org.mxunit/core/2.1.3/mxunit" virtual="/mxunit"/>
 <mapping physical="./../tests" virtual="/tests"/>
+<mapping physical="./../tests" scmurl="" virtual="/physical"/>
 </mappings>
